@@ -1,0 +1,2 @@
+docker build -t flask-space-challenge:latest .
+docker run -p 5000:5000 -v $(pwd):/app flask-space-challenge:latest
