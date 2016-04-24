@@ -4,6 +4,21 @@ import json
 import difflib
 from geopy.distance import great_circle
 
+"""
+curl -v -L -G \
+    -d "latitude=8.537981&longitude=-80.782127" \
+    http://localhost:5000/get_flight_data
+
+curl -v -L -G \
+    -d "latitude=9.011125&longitude=-79.474583" \
+    http://localhost:5000/get_flight_data
+
+curl -v -L -G \
+    -d "latitude=8.968821&longitude=-79.558096" \
+    http://localhost:5000/get_flight_data
+"""
+
+
 def find_flight_data(latitude, longitude):
     weather, advisories = _get_weather_data(latitude, longitude)
     res = dict()
@@ -11,6 +26,10 @@ def find_flight_data(latitude, longitude):
     res['alerts'] = advisories
     return json.dumps(res, default=jdefault)
 
+def find_life_expectancy(latitude, longitude, elevation):
+    current_position = (-79.559984, 8.970602)
+    d = great_circle(current_position, (longitude, latitude)).kilometers
+    return {'distance': d, 'latitude': current_position[1], 'longitude': current_position[0]}
 
 def jdefault(o):
     if isinstance(o, Polygon):
@@ -26,16 +45,26 @@ def _get_weather_data(latitude, longitude):
     weather = response['weather']
     advisories = response['nearest_advisories']
     advisories = _find_advisories(advisories, latitude, longitude)
-    advisories = _distance_to_advisories(advisories, latitude, longitude)
+    advisories = _process_advisories(advisories, latitude, longitude)
     return weather, advisories
 
 
-def _distance_to_advisories(advisories, latitude, longitude):
+def _process_advisories(advisories, latitude, longitude):
     # current_position = (latitude, longitude)
     current_position = (longitude, latitude)
-    destination = (41.499498, -81.695391)
-    thing = filter(lambda x: _find_distance_with_coordinates(current_position, x['polygon'].exterior.coords)==True , advisories)
-    return thing
+    result = []
+    for o in advisories:
+        distance = _find_shortest_with_coordinates(current_position, o['polygon'].exterior.coords)
+        if distance:
+            o['close_distace'] = distance
+            o['inside'] = o['polygon'].contains(Point(float(longitude), float(latitude)))
+            result.append(o)
+    return result
+
+
+def _find_shortest_with_coordinates(current_position, coordinate_list):
+    all_distances = map(lambda x: great_circle(current_position, x).kilometers ,coordinate_list)
+    return min(float(s) for s in filter(lambda x: x <= 2.00, all_distances))
 
 
 def _find_distance_with_coordinates(current_position, coordinate_list):
