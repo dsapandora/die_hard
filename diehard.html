@@ -17,6 +17,10 @@
     </head>
     <body>
         <div id="map"></div>
+                <link rel="stylesheet" type="text/css" href="jquery.m.toast.css" />
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+        <script type="text/javascript" src="jquery.m.toast.js"></script>
+        
         <script>
              var latitude  = 8.9830467;
              var longitude = -79.53654;
@@ -42,10 +46,10 @@
  	            throw new Error("Could not create HTTP request object.");
 		}
              
-           function success(position) {
+        function success(position) {
          latitude  = position.coords.latitude;
          longitude = position.coords.longitude;
-} 
+        } 
  function error() {
    // output.innerHTML = "Unable to retrieve your location";
   };
@@ -56,12 +60,12 @@
              request.open("GET", url, false);
              request.send(null);
              var weather = JSON.parse(request.responseText);
-             text = weather.list[0].name+": "+weather.list[0].weather[0].description+"\n";
-             text += "Pressure: "+weather.list[0].main.pressure+"\n Humidity: "+weather.list[0].main.humidity;
-             text += "\nTemperature: "+weather.list[0].main.temp;
-             text += "\nWind Speed: "+weather.list[0].wind.speed;
-            text += "\nWind Degree: "+weather.list[0].wind.deg;
-              alert(text);
+             text = weather.list[0].name+": "+weather.list[0].weather[0].description+"</br>";
+             text += "Pressure: "+weather.list[0].main.pressure+"</br> Humidity: "+weather.list[0].main.humidity;
+             text += "</br>Temperature: "+weather.list[0].main.temp;
+             text += "</br>Wind Speed: "+weather.list[0].wind.speed;
+            text += "</br>Wind Degree: "+weather.list[0].wind.deg;
+             $.toast(text, {'duration': 10000, 'type': 'success', 'align': 'top'});
         }
         </script>
     </body>
