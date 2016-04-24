@@ -1,0 +1,16 @@
+<package>
+  <description brief="DroneInteractiveEnviroment">
+
+     DroneInteractiveEnviroment
+
+  </description>
+  <author>dsapandora</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/DroneInteractiveEnviroment</url>
+  <depend package="rospy"/>
+  <depend package="ardrone_autonomy" />
+
+</package>
+
+
